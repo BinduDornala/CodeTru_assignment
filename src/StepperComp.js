@@ -16,220 +16,109 @@ import {
   Checkbox,
   InputLabel,
   ListItemText,
+  Card,
   //   IconButton
 } from "@mui/material";
 import SideNav from "./SideNav";
 import GeneralDetails from "./GeneralDetails";
+import AddressDetails from "./AddressDetails";
+import PayDetails from "./PayDetails";
+import DialogTitle from "@mui/material/DialogTitle";
+import Dialog from "@mui/material/Dialog";
+import { Margin } from "@mui/icons-material";
 
 const StepperComp = () => {
   const steps = ["General Details", "Address", "Pay Configuration"];
   const [activeStep, setActiveStep] = useState(0);
+  const [subActiveStep, setSubActiveStep] = useState(0);
   const [addresses, setAddresses] = useState([{ city: "", postalCode: "" }]);
-  const [selectedValues, setSelectedValues] = useState([]);
-  const [newValue, setNewValue] = useState("");
+  const [basicDetails, setBasicDetails] = useState({
+    firstName: "",
+    dateOfBirth: "",
+  });
+  const [contactDetails, setContactDetails] = useState({
+    emailId: "",
+    phoneNumber: "",
+  });
+  const [detailsType, setDetailsType] = useState("basic");
+  const [payDetails, setPayDetails] = useState([{ approvers: [] }]);
+  const [errors, setErrors] = useState("");
+  const [button, setButton] = useState("Next");
+  const [modalDisplay, setModalDisplay] = useState(false);
 
-  const handleGeneralDetails = () => {
-    return (
-      <div>
-        <Grid container spacing={2}>
-          <Grid item xs={8} sm={4}>
-            <TextField
-              label="Field 1"
-              variant="outlined"
-              //   value={field1}
-              //   onChange={handleField1Change}
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              label="Field 2"
-              variant="outlined"
-              //   value={field2}
-              //   onChange={handleField2Change}
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              label="Field 2"
-              variant="outlined"
-              //   value={field2}
-              //   onChange={handleField2Change}
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              label="Field 2"
-              variant="outlined"
-              //   value={field2}
-              //   onChange={handleField2Change}
-              fullWidth
-            />
-          </Grid>
-        </Grid>
-      </div>
-    );
-  };
+  const contactDetailsValidation = (details) => {
+    let isValid = true;
+    // if (!contactDetails.emailId) {
+    //   isValid = false;
+    // }
 
-  const handleAddAddress = () => {
-    setAddresses([...addresses, { city: "", postalCode: "" }]);
-  };
+    // if (!contactDetails.phoneNumber) {
+    //   isValid = false;
+    // }
+    // if(addresses.)
+    // if (!isValid) {
+    //   setErrors("All the Details are required");
+    // }
+    // setErrors(errors);
 
-  const handleRemoveAddress = (index) => {
-    const newAddresses = [...addresses];
-    newAddresses.splice(index, 1);
-    setAddresses(newAddresses);
-  };
+    if (
+      details === "address" &&
+      !addresses[0].city &&
+      !addresses[0].postalCode
+    ) {
+      isValid = false;
+      setErrors("At least one city and postal code is required");
+    }
+    if (details === "pay" && !payDetails[0].approvers.length >= 1) {
+      isValid = false;
+      setErrors("At Least One Approver is required");
+    }
 
-  const handleChangeAddress = (index, field, value) => {
-    const newAddresses = [...addresses];
-    newAddresses[index][field] = value;
-    setAddresses(newAddresses);
-  };
-
-  const handleSubmit = () => {
-    // You can handle form submission here
-    console.log(addresses);
-  };
-
-  const handleAddressDetails = () => {
-    return (
-      <form onSubmit={handleSubmit}>
-        {addresses.map((address, index) => (
-          <Grid container spacing={2} key={index}>
-            <Grid item xs={4}>
-              <TextField
-                label={`City ${index + 1}`}
-                variant="outlined"
-                fullWidth
-                required={index === 0}
-                value={address.city}
-                onChange={(e) =>
-                  handleChangeAddress(index, "city", e.target.value)
-                }
-              />
-            </Grid>
-            <Grid item xs={4}>
-              <TextField
-                label={`Postal Code ${index + 1}`}
-                variant="outlined"
-                fullWidth
-                required={index === 0}
-                value={address.postalCode}
-                onChange={(e) =>
-                  handleChangeAddress(index, "postalCode", e.target.value)
-                }
-              />
-            </Grid>
-            <Grid item xs={2}>
-              <Button
-                variant="outlined"
-                color="secondary"
-                onClick={() => handleRemoveAddress(index)}
-                disabled={addresses.length === 1}
-              >
-                Minus
-              </Button>
-            </Grid>
-          </Grid>
-        ))}
-        <Button variant="contained" color="primary" onClick={handleAddAddress}>
-          Add
-        </Button>
-        <Button type="submit" variant="contained" color="primary">
-          Submit
-        </Button>
-      </form>
-    );
-  };
-
-  const handlePayDetails = () => {
-    const options = [
-      "Apple",
-      "Banana",
-      "Orange",
-      "Mango",
-      "Pineapple",
-      "Grapes",
-      "Strawberry",
-      "Watermelon",
-      "Kiwi",
-      "Peach",
-    ];
-
-    const handleChange = (event) => {
-      setSelectedValues(event.target.value);
-    };
-
-    // const handleChipDelete = useMemo(
-    //   () => (chipToDelete) => () => {
-    //     setSelectedValues((chips) =>
-    //       chips.filter((chip) => chip !== chipToDelete)
-    //     );
-    //   },
-    //   []
-    // );
-    const handleAddSelectInput = () => {
-      const newInputId = selectedValues.length;
-      setSelectedValues([...selectedValues, newInputId]);
-    };
-
-    return (
-      <FormControl sx={{ m: 1, minWidth: 120 }}>
-        <InputLabel id="multi-select-label">Select</InputLabel>
-        <Select
-          labelId="multi-select-label"
-          multiple
-          value={selectedValues}
-          onChange={handleChange}
-          // renderValue={(selected) => selected.join(", ")}
-          renderValue={(selected) => (
-            <div style={{ display: "flex", flexWrap: "wrap" }}>
-              {selected.map((value) => (
-                <Chip
-                  key={value}
-                  label={value}
-                  style={{ margin: "2px" }}
-                  //   onDelete={handleChipDelete(value)}
-                />
-              ))}
-            </div>
-          )}
-          inputProps={{
-            name: "selectedValues",
-            id: "selected-values",
-          }}
-        >
-          {options.map((option) => (
-            <MenuItem key={option} value={option}>
-              <Checkbox checked={selectedValues.indexOf(option) > -1} />
-              <ListItemText primary={option} />
-            </MenuItem>
-          ))}
-        </Select>
-        {/* <Button onClick={() => setSelectedValues([])}>Clear</Button> */}
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleAddSelectInput}
-        >
-          Add Select Input
-        </Button>
-      </FormControl>
-    );
+    if (isValid) {
+      setErrors("");
+    }
+    return isValid;
   };
 
   const handleNext = () => {
-    setActiveStep((prevStep) => prevStep + 1);
+    if (activeStep == 0) {
+      // if (contactDetailsValidation()) {
+      setActiveStep((prevStep) => prevStep + 1);
+      setErrors("");
+      // }
+    }
+    if (activeStep == 1) {
+      if (contactDetailsValidation("address")) {
+        setActiveStep((prevStep) => prevStep + 1);
+      }
+    }
+    if (activeStep == 2) {
+      if (contactDetailsValidation("pay")) {
+        setButton("Finish");
+      }
+    }
+    if (button == "Finish") {
+      setModalDisplay(true);
+    }
   };
 
   return (
     <>
-      <Box sx={{ display: "flex" }}>
+      <Box
+        sx={{
+          display: "flex",
+          // justifyContent: "center",
+          minHeight: "100vh",
+        }}
+      >
         <SideNav />
-        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            p: 3,
+          }}
+        >
           <Stepper activeStep={activeStep}>
             {steps.map((label, index) => {
               const stepProps = {};
@@ -240,12 +129,62 @@ const StepperComp = () => {
               );
             })}
           </Stepper>
-          <Box>
-            {activeStep == 0 && <GeneralDetails />}{" "}
-            {activeStep == 1 && handleAddressDetails()}{" "}
-            {activeStep == 2 && handlePayDetails()}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "60vh",
+              // mt: 10,
+            }}
+          >
+            <Card sx={{ m: 2, p: 3, minWidth: "90vh" }}>
+              {activeStep == 0 &&
+                (subActiveStep == 0 ? (
+                  <GeneralDetails
+                    basicDetails={basicDetails}
+                    setBasicDetails={setBasicDetails}
+                    type={detailsType}
+                  />
+                ) : (
+                  <GeneralDetails
+                    contactDetails={contactDetails}
+                    setContactDetails={setContactDetails}
+                    type={detailsType}
+                  />
+                ))}{" "}
+              {activeStep == 1 && (
+                <AddressDetails
+                  addresses={addresses}
+                  setAddresses={setAddresses}
+                />
+              )}{" "}
+              {activeStep == 2 && (
+                <PayDetails
+                  payDetails={payDetails}
+                  setPayDetails={setPayDetails}
+                />
+              )}
+            </Card>
+            {errors && <div style={{ margin: "1rem" }}> {errors} </div>}
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleNext}
+              sx={{ float: "right" }}
+            >
+              {" "}
+              {button}{" "}
+            </Button>
           </Box>
-          <Button onClick={handleNext}> Next </Button>
+
+          {modalDisplay && (
+            <Dialog open={modalDisplay} onClose={() => setModalDisplay(false)}>
+              <DialogTitle>Congratulations</DialogTitle>
+              <Typography> Forms Submitted Successfully </Typography>
+            </Dialog>
+          )}
         </Box>
       </Box>
     </>
