@@ -34,13 +34,12 @@ const StepperComp = () => {
   const [addresses, setAddresses] = useState([{ city: "", postalCode: "" }]);
   const [basicDetails, setBasicDetails] = useState({
     firstName: "",
-    dateOfBirth: "",
+    dateOfBirth: null,
   });
   const [contactDetails, setContactDetails] = useState({
     emailId: "",
     phoneNumber: "",
   });
-  const [detailsType, setDetailsType] = useState("basic");
   const [payDetails, setPayDetails] = useState([{ approvers: [] }]);
   const [errors, setErrors] = useState("");
   const [button, setButton] = useState("Next");
@@ -48,26 +47,29 @@ const StepperComp = () => {
 
   const contactDetailsValidation = (details) => {
     let isValid = true;
-    // if (!contactDetails.emailId) {
-    //   isValid = false;
-    // }
+    if (
+      details === "basic" &&
+      (!basicDetails?.firstName || !basicDetails.dateOfBirth)
+    ) {
+      console.log("inside");
+      isValid = false;
+      setErrors("Both firstName and date of birth are required");
+    }
 
-    // if (!contactDetails.phoneNumber) {
-    //   isValid = false;
-    // }
-    // if(addresses.)
-    // if (!isValid) {
-    //   setErrors("All the Details are required");
-    // }
-    // setErrors(errors);
+    if (
+      details === "contact" &&
+      (!contactDetails.emailId || !contactDetails.phoneNumber)
+    ) {
+      isValid = false;
+      setErrors("Both Email and phone Number are required");
+    }
 
     if (
       details === "address" &&
-      !addresses[0].city &&
-      !addresses[0].postalCode
+      (!addresses[0].city || !addresses[0].postalCode)
     ) {
       isValid = false;
-      setErrors("At least one city and postal code is required");
+      setErrors("Both city and postal code are required");
     }
     if (details === "pay" && !payDetails[0].approvers.length >= 1) {
       isValid = false;
@@ -81,11 +83,15 @@ const StepperComp = () => {
   };
 
   const handleNext = () => {
-    if (activeStep == 0) {
-      // if (contactDetailsValidation()) {
-      setActiveStep((prevStep) => prevStep + 1);
-      setErrors("");
-      // }
+    if (activeStep == 0 && subActiveStep == 0) {
+      if (contactDetailsValidation("basic")) {
+        setSubActiveStep((prevStep) => prevStep + 1);
+      }
+    }
+    if (activeStep == 0 && subActiveStep == 1) {
+      if (contactDetailsValidation("contact")) {
+        setActiveStep((prevStep) => prevStep + 1);
+      }
     }
     if (activeStep == 1) {
       if (contactDetailsValidation("address")) {
@@ -102,12 +108,22 @@ const StepperComp = () => {
     }
   };
 
+  const renderSteps = () => {
+    const steps = 2;
+
+    return Array.from({ length: steps }, (_, index) => (
+      <div
+        key={index}
+        className={`step ${index === subActiveStep ? "active" : ""}`}
+      />
+    ));
+  };
+
   return (
     <>
       <Box
         sx={{
           display: "flex",
-          // justifyContent: "center",
           minHeight: "100vh",
         }}
       >
@@ -139,21 +155,21 @@ const StepperComp = () => {
               // mt: 10,
             }}
           >
+            {activeStep == 0 && (
+              <div className="horizontal-stepper">{renderSteps()}</div>
+            )}
             <Card sx={{ m: 2, p: 3, minWidth: "90vh" }}>
-              {activeStep == 0 &&
-                (subActiveStep == 0 ? (
-                  <GeneralDetails
-                    basicDetails={basicDetails}
-                    setBasicDetails={setBasicDetails}
-                    type={detailsType}
-                  />
-                ) : (
+              {activeStep == 0 && (
+                <>
                   <GeneralDetails
                     contactDetails={contactDetails}
                     setContactDetails={setContactDetails}
-                    type={detailsType}
+                    basicDetails={basicDetails}
+                    setBasicDetails={setBasicDetails}
+                    type={subActiveStep == 0 ? "basic" : "contact"}
                   />
-                ))}{" "}
+                </>
+              )}{" "}
               {activeStep == 1 && (
                 <AddressDetails
                   addresses={addresses}

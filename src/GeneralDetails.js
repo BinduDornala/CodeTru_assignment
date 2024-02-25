@@ -19,6 +19,10 @@ import {
   ListItemText,
   //   IconButton
 } from "@mui/material";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 const GeneralDetails = ({
   contactDetails,
@@ -27,62 +31,75 @@ const GeneralDetails = ({
   basicDetails,
   type,
 }) => {
-  const [subActiveStep, setSubActiveStep] = useState(0);
-  const [date, newDate] = useState(null);
-
-  const handleField1Change = (fieldName, value) => {
-    // setDetails((prevState) => ({
-    //   ...prevState,
-    //   [fieldName]: value,
-    // }));
+  const handleContactChange = (fieldName, value) => {
+    if (type == "basic") {
+      setBasicDetails((prevState) => ({
+        ...prevState,
+        [fieldName]: value,
+      }));
+    } else {
+      setContactDetails((prevState) => ({
+        ...prevState,
+        [fieldName]: value,
+      }));
+    }
   };
 
-  // console.log("contactDetails", contactDetails);
+  console.log("basic12", basicDetails);
 
   return (
     <>
       <Typography sx={{ mb: 2, textAlign: "start" }} variant="h6">
         {type === "basic" ? "Basic Details" : "Contact Details"}
       </Typography>
-      <Grid container spacing={2}>
-        {type === "basic" ? (
-          <Box>
-            <Grid item xs={8} sm={4}>
-              <TextField
-                label="Field 1"
-                variant="outlined"
-                //   value={field1}
-                // onChange={handleField1Change}
-                fullWidth
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}></Grid>
-          </Box>
-        ) : (
-          <Box>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Email-ID"
-                variant="outlined"
-                // value={details.emailId}
-                onChange={(e) => handleField1Change("emailId", e.target.value)}
-                fullWidth
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Mobile Number"
-                variant="outlined"
-                // value={details.phoneNumber}
-                onChange={(e) =>
-                  handleField1Change("phoneNumber", e.target.value)
-                }
-                fullWidth
-              />
-            </Grid>
-          </Box>
-        )}
-      </Grid>
+      {type === "basic" ? (
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Field 1"
+              variant="outlined"
+              value={basicDetails?.firstName}
+              onChange={(e) => handleContactChange("firstName", e.target.value)}
+              fullWidth
+              sx={{ pt: "8px" }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DemoContainer components={["DatePicker"]}>
+                <DatePicker
+                  label="Date Of Birth"
+                  value={basicDetails?.dateOfBirth}
+                  onChange={(val) => handleContactChange("dateOfBirth", val)}
+                />
+              </DemoContainer>
+            </LocalizationProvider>
+          </Grid>
+        </Grid>
+      ) : (
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Email-ID"
+              variant="outlined"
+              value={contactDetails.emailId}
+              onChange={(e) => handleContactChange("emailId", e.target.value)}
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Mobile Number"
+              variant="outlined"
+              value={contactDetails.phoneNumber}
+              onChange={(e) =>
+                handleContactChange("phoneNumber", e.target.value)
+              }
+              fullWidth
+            />
+          </Grid>
+        </Grid>
+      )}
     </>
   );
 };

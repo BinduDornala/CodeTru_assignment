@@ -36,3 +36,22 @@
     transform: rotate(360deg);
   }
 }
+
+.horizontal-stepper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-width: 90vh;
+}
+
+.step {
+  width: 290px; /* Adjust the width of each step as needed */
+  height: 4px; /* Adjust the height of the line as needed */
+  background-color: #ccc; /* Adjust the color of the line as needed */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.active {
+  background-color: #3498db; /* Adjust the color for the active step as needed */
+}
